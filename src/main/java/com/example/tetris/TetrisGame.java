@@ -14,7 +14,7 @@ public class TetrisGame extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Tetris Game");
         Pane root = new Pane();
-        Scene scene = new Scene(root, BOARD_WIDTH * 30, BOARD_HEIGHT * 30);
+        Scene scene = new Scene(root, BOARD_WIDTH * 40, BOARD_HEIGHT * 40);
         scene.setFill(Color.DARKGRAY); // Set the background color
 
         primaryStage.setScene(scene);
