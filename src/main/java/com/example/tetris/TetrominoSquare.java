@@ -1,14 +1,12 @@
 package com.example.tetris;
 
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 
 import java.util.Objects;
 
-public class TetrominoSquare extends TetrominoL {
-    //Image blockImage = new Image(Objects.requireNonNull(getClass().getResource("/Square.png")).toExternalForm());
+public class TetrominoSquare extends Tetromino {
     public TetrominoSquare() {
-        super("/Square.png");
+        blockImage = new Image(Objects.requireNonNull(getClass().getResource("/Square.png")).toExternalForm());
         shapes = new int[][][]{
                 {
                         {1, 1, 0},

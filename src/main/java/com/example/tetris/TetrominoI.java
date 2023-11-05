@@ -4,9 +4,9 @@ import javafx.scene.image.Image;
 
 import java.util.Objects;
 
-public class TetrominoI extends TetrominoL {
+public class TetrominoI extends Tetromino {
     public TetrominoI() {
-        super("/I-Block.png");
+        blockImage = new Image(Objects.requireNonNull(getClass().getResource("/I-Block.png")).toExternalForm());
         shapes = new int[][][]{
                 {
                         {0, 1, 0, 0},
