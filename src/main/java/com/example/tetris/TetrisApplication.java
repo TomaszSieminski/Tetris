@@ -1,3 +1,4 @@
+
 package com.example.tetris;
 
 import javafx.application.Application;
@@ -15,3 +16,4 @@ public class TetrisApplication extends Application {
         tetrisGame.start(primaryStage);
     }
 }
+

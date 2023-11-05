@@ -15,7 +15,7 @@ public class TetrominoT extends Tetromino {
                 },
                 {
                         {0, 1, 0},
-                        {1, 1, 0},
+                        {0, 1, 1},
                         {0, 1, 0}
                 },
                 {
@@ -25,7 +25,7 @@ public class TetrominoT extends Tetromino {
                 },
                 {
                         {0, 1, 0},
-                        {0, 1, 1},
+                        {1, 1, 0},
                         {0, 1, 0}
                 },
 
