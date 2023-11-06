@@ -6,6 +6,7 @@ import javafx.scene.layout.Pane;
 
 public class Tetromino {
     public static final int SIZE = 50; //size of single square, defines the size of the tetromino
+    public static int shapeSize = 0;
     int[][][] shapes; // Array storing the different states of the tetromino shape
     int currentShape; // Current shape index
     Image blockImage;

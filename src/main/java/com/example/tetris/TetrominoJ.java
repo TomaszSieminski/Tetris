@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class TetrominoJ extends Tetromino {
     public TetrominoJ() {
+        shapeSize = 3;
         blockImage = new Image(Objects.requireNonNull(getClass().getResource("/J-Block.png")).toExternalForm());
         shapes = new int[][][]{
                 {
