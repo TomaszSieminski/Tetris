@@ -1,13 +1,16 @@
 package com.example.tetris;
 
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import javafx.scene.layout.Pane;
+
 
 public class Board {
     public static final int BOARD_WIDTH = 10;
-    public static final int BOARD_HEIGHT = 10;
+    public static final int BOARD_HEIGHT = 20;
     private static Tetromino currentTetromino;
     private static Pane currentTetrominoPane;
     private static int currentTetrominoX;

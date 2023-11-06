@@ -47,7 +47,5 @@ public class Tetromino {
         this.currentShape = (this.currentShape + 1) % shapes.length;
     }
 
-
-
 }
 

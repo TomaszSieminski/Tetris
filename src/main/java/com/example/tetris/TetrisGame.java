@@ -4,23 +4,17 @@ import javafx.application.Application;
 
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 
-
-
 public class TetrisGame extends Application {
-
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Tetris");
-
         Scene scene = new Scene(Board.root, Board.BOARD_WIDTH * Tetromino.SIZE, Board.BOARD_HEIGHT * Tetromino.SIZE);
         scene.setFill(Color.DARKGRAY); // Set the background color
-
         Board.spawnTetromino();
 
         scene.setOnKeyPressed(event -> {
@@ -28,8 +22,8 @@ public class TetrisGame extends Application {
                 case LEFT -> Board.moveTetrominoLeft();
                 case RIGHT -> Board.moveTetrominoRight();
                 case SPACE -> Board.rotateTetromino();
+                case DOWN -> Board.moveTetrominoDown();
             }
-
         });
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(0.5), event -> {
