@@ -10,175 +10,36 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
 
-import java.util.Random;
+
 
 public class TetrisGame extends Application {
-    Pane root = new Pane();
-    public static final int BOARD_WIDTH = 10;
-    public static final int BOARD_HEIGHT = 20;
-    enum ShapeType {
-        L, Square, J, T, I, S, Z
-    }
-    private Tetromino currentTetromino;
-    private Pane currentTetrominoPane;
-    private int currentTetrominoX;
-    private int currentTetrominoY;
-    private final int[][] board = new int[BOARD_WIDTH][BOARD_HEIGHT];
-
-
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Tetris");
 
-        Scene scene = new Scene(root, BOARD_WIDTH * Tetromino.SIZE, BOARD_HEIGHT * Tetromino.SIZE);
+        Scene scene = new Scene(Board.root, Board.BOARD_WIDTH * Tetromino.SIZE, Board.BOARD_HEIGHT * Tetromino.SIZE);
         scene.setFill(Color.DARKGRAY); // Set the background color
 
-        spawnTetromino();
+        Board.spawnTetromino();
 
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case LEFT -> moveTetrominoLeft();
-                case RIGHT -> moveTetrominoRight();
-                case SPACE -> rotateTetromino();
+                case LEFT -> Board.moveTetrominoLeft();
+                case RIGHT -> Board.moveTetrominoRight();
+                case SPACE -> Board.rotateTetromino();
             }
 
         });
         Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(0.2), event -> {
-                    moveTetrominoDown();
+                new KeyFrame(Duration.seconds(0.5), event -> {
+                    Board.moveTetrominoDown();
                 })
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-    public void spawnTetromino() {
-        Tetromino randomTetromino = createRandomTetromino(); // Create a new random tetromino
-        currentTetromino = randomTetromino; // Assign them as current tetromino
-        currentTetrominoX = 0; // Set starting position X
-        currentTetrominoY = 0; // Set starting position Y
-        currentTetrominoPane = randomTetromino.createTetromino(); // Create a Pane for the new tetromino
-        currentTetrominoPane.relocate(currentTetrominoX,currentTetrominoY); // Place on the board
-        root.getChildren().add(currentTetrominoPane); // Add to the scene
-    }
-    private Tetromino createRandomTetromino() {
-        Random random = new Random();
-        ShapeType randomType = ShapeType.values()[random.nextInt(7)];
-        //ShapeType randomType = ShapeType.Square;
-
-        Tetromino shape = null;
-
-        switch (randomType) {
-            case L -> shape = new TetrominoL();
-            case Square -> shape = new TetrominoSquare();
-            case J -> shape = new TetrominoJ();
-            case T -> shape = new TetrominoT();
-            case I -> shape = new TetrominoI();
-            case S -> shape = new TetrominoS();
-            case Z -> shape = new TetrominoZ();
-        }
-        return shape;
-    }
-
-    private void moveTetrominoLeft() {
-        if (currentTetromino != null) {
-            int newX = currentTetrominoX - Tetromino.SIZE;
-
-            if (canMoveTetrominoToPosition(currentTetromino, newX, currentTetrominoY)) {
-                currentTetrominoPane.relocate(newX, currentTetrominoY);
-                currentTetrominoX = newX;
-            }
-        }
-    }
-
-    private void moveTetrominoRight() {
-        if (currentTetromino != null) {
-            int newX = currentTetrominoX + Tetromino.SIZE;
-
-            if (canMoveTetrominoToPosition(currentTetromino, newX, currentTetrominoY)) {
-                currentTetrominoPane.relocate(newX, currentTetrominoY);
-                currentTetrominoX = newX;
-            }
-        }
-    }
-
-    private boolean canMoveTetrominoToPosition(Tetromino tetromino, int newX, int newY) {
-        int[][] shape = tetromino.getShape();
-        for (int y = 0; y < Tetromino.shapeSize; y++) {
-            for (int x = 0; x < Tetromino.shapeSize; x++) {
-                if (shape[y][x] == 1) {
-                    int boardX = newX / Tetromino.SIZE + x;
-                    int boardY = newY / Tetromino.SIZE + y;
-
-                    if (boardX < 0 || boardX >= BOARD_WIDTH || boardY >= BOARD_HEIGHT || board[boardX][boardY] == 1) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    private void rotateTetromino() {
-        currentTetromino.rotate();
-        refreshTetrominoView();
-    }
-    private void refreshTetrominoView() {
-        root.getChildren().remove(currentTetrominoPane); // Remove current tetromino
-        currentTetrominoPane = currentTetromino.createTetromino(); // Create a new tetromino
-        currentTetrominoPane.relocate(currentTetrominoX,currentTetrominoY);
-        root.getChildren().add(currentTetrominoPane); // Add to the scene
-    }
-
-    private void moveTetrominoDown() {
-            if (currentTetromino != null && canMoveTetrominoDown()) {
-                int newY = currentTetrominoY + Tetromino.SIZE;
-                currentTetrominoPane.relocate(currentTetrominoX, newY);
-                currentTetrominoY = newY;
-            } else {
-                placeTetrominoOnBoard();
-                spawnTetromino();
-            }
-    }
-
-    private boolean canMoveTetrominoDown() {
-        int newY = currentTetrominoY + Tetromino.SIZE;
-
-        if (newY >= BOARD_HEIGHT * Tetromino.SIZE) {
-            return false;
-        }
-
-        return canPlaceTetrominoOnBoard(currentTetromino, currentTetrominoX, newY);
-    }
-    private boolean canPlaceTetrominoOnBoard(Tetromino currentTetromino, int newX, int newY) {
-        int[][] shape = currentTetromino.getShape();
-        for (int y = 0; y < Tetromino.shapeSize; y++) {
-            for (int x = 0; x < Tetromino.shapeSize; x++) {
-                if (shape[y][x] == 1) {
-                    int boardX = newX / Tetromino.SIZE + x;
-                    int boardY = newY / Tetromino.SIZE + y;
-
-                    if (boardX < 0 || boardX >= BOARD_WIDTH || boardY >= BOARD_HEIGHT || board[boardX][boardY] == 1) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-    private void placeTetrominoOnBoard() {
-        int[][] shape = currentTetromino.getShape();
-        for (int y = 0; y < Tetromino.shapeSize; y++) {
-            for (int x = 0; x < Tetromino.shapeSize; x++) {
-                if (shape[y][x] == 1) {
-                    int boardX = currentTetrominoX / Tetromino.SIZE + x;
-                    int boardY = currentTetrominoY / Tetromino.SIZE + y;
-                    board[boardX][boardY] = 1;
-                }
-            }
-        }
     }
     public static void main(String[] args) {
         launch(args);
