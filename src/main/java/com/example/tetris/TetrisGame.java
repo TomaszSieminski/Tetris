@@ -1,7 +1,7 @@
 package com.example.tetris;
 
 import javafx.application.Application;
-import javafx.scene.input.KeyCode;
+
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -14,14 +14,14 @@ public class TetrisGame extends Application {
     Pane root = new Pane();
     public static final int BOARD_WIDTH = 10;
     public static final int BOARD_HEIGHT = 20;
-    public static final int SHAPE_SIZE = 50; //size of single square, defines the size of the tetromino
     enum ShapeType {
         L, Square, J, T, I, S, Z
     }
-    private Tetromino currentTetromino; // Aktualne tetromino
-    private Pane currentTetrominoPane; // Pane zawierające aktualne tetromino
-    private int currentTetrominoX; // Aktualna pozycja X tetromino na planszy
-    private int currentTetrominoY; // Aktualna pozycja Y tetromino na planszy
+    private Tetromino currentTetromino;
+    private Pane currentTetrominoPane;
+    private int currentTetrominoX;
+    private int currentTetrominoY;
+    private final int[][] board = new int[BOARD_WIDTH][BOARD_HEIGHT];
 
 
 
@@ -29,27 +29,35 @@ public class TetrisGame extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Tetris");
 
-        Scene scene = new Scene(root, BOARD_WIDTH * 40, BOARD_HEIGHT * 40);
+        Scene scene = new Scene(root, BOARD_WIDTH * Tetromino.SIZE, BOARD_HEIGHT * Tetromino.SIZE);
         scene.setFill(Color.DARKGRAY); // Set the background color
 
         spawnTetromino();
 
         scene.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.SPACE) {
-                // Obsługa naciśnięcia spacji - obróć tetromino
-                if (currentTetromino != null) {
-                    currentTetromino.rotate();
-                    refreshTetrominoView();
-                }
+            switch (event.getCode()) {
+                case LEFT -> moveTetrominoLeft();
+                case RIGHT -> moveTetrominoRight();
+                case SPACE -> rotateTetromino();
             }
+
         });
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
+    public void spawnTetromino() {
+        Tetromino randomTetromino = createRandomTetromino(); // Create a new random tetromino
+        currentTetromino = randomTetromino; // Assign them as current tetromino
+        currentTetrominoX = 0; // Set starting position X
+        currentTetrominoY = 0; // Set starting position Y
+        currentTetrominoPane = randomTetromino.createTetromino(); // Create a Pane for the new tetromino
+        currentTetrominoPane.relocate(currentTetrominoX,currentTetrominoY); // Place on the board
+        root.getChildren().add(currentTetrominoPane); // Add to the scene
+    }
     private Tetromino createRandomTetromino() {
         Random random = new Random();
         ShapeType randomType = ShapeType.values()[random.nextInt(7)];
+        //ShapeType randomType = ShapeType.Square;
 
         Tetromino shape = null;
 
@@ -65,22 +73,33 @@ public class TetrisGame extends Application {
         return shape;
     }
 
-    public void spawnTetromino() {
-        Tetromino randomTetromino = createRandomTetromino(); // Utwórz nowe losowe tetromino
-        currentTetromino = randomTetromino; // Przypisz je jako aktualne tetromino
-        currentTetrominoX = 200; // Ustaw pozycję początkową X
-        currentTetrominoY = 0; // Ustaw pozycję początkową Y
-        currentTetrominoPane = randomTetromino.createTetromino(); // Utwórz Pane dla nowego tetromino
-        currentTetrominoPane.relocate(200,200); // Umieść na planszy
-        root.getChildren().add(currentTetrominoPane); // Dodaj do sceny
+    private void moveTetrominoLeft() {
+        if (currentTetromino != null) {
+            int newX = currentTetrominoX - Tetromino.SIZE;
+            currentTetrominoPane.relocate(newX, currentTetrominoY);
+            currentTetrominoX = newX;
+
+        }
     }
 
+    private void moveTetrominoRight() {
+        if (currentTetromino != null) {
+            int newX = currentTetrominoX + Tetromino.SIZE;
+            currentTetrominoPane.relocate(newX, currentTetrominoY);
+            currentTetrominoX = newX;
 
+        }
+    }
+
+    private void rotateTetromino() {
+        currentTetromino.rotate();
+        refreshTetrominoView();
+    }
     private void refreshTetrominoView() {
-        root.getChildren().remove(currentTetrominoPane); // Usuń aktualne tetromino
-        currentTetrominoPane = currentTetromino.createTetromino(); // Utwórz nowe tetromino
-        currentTetrominoPane.relocate(200,200);
-        root.getChildren().add(currentTetrominoPane); // Dodaj nowe tetromino do sceny
+        root.getChildren().remove(currentTetrominoPane); // Remove current tetromino
+        currentTetrominoPane = currentTetromino.createTetromino(); // Create a new tetromino
+        currentTetrominoPane.relocate(currentTetrominoX,currentTetrominoY);
+        root.getChildren().add(currentTetrominoPane); // Add to the scene
     }
     public static void main(String[] args) {
         launch(args);

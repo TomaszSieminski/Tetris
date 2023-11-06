@@ -43,23 +43,10 @@ public class Tetromino {
         return shapes[currentShape];
     }
     public void rotate() {
-        int[][] currentShape = shapes[this.currentShape]; // Bieżący kształt
-        currentShape = rotateMatrix(currentShape); // Obróć kształt
-
-        // Przejdź do następnego kształtu lub wróć do pierwszego
         this.currentShape = (this.currentShape + 1) % shapes.length;
     }
-    private int[][] rotateMatrix(int[][] matrix) {
-        int size = matrix.length;
-        int[][] rotatedMatrix = new int[size][size];
 
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                rotatedMatrix[i][j] = matrix[size - j - 1][i];
-            }
-        }
 
-        return rotatedMatrix;
-    }
+
 }
 
