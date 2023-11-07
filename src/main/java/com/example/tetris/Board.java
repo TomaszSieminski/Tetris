@@ -101,6 +101,7 @@ public class Board {
             currentTetrominoY = newY;
         } else {
             placeTetrominoOnBoard();
+            removeFullLines();
             spawnTetromino();
         }
     }
@@ -138,6 +139,70 @@ public class Board {
                     int boardY = currentTetrominoY / Tetromino.SIZE + y;
                     board[boardX][boardY] = 1;
                 }
+            }
+        }
+    }
+    public static void removeFullLines() {
+        List<Integer> fullLines = new ArrayList<>();
+        for (int y = 0; y < BOARD_HEIGHT; y++) {
+            boolean isFull = true;
+            for (int x = 0; x < BOARD_WIDTH; x++) {
+                if (board[x][y] != 1) {
+                    isFull = false;
+                    break;
+                }
+            }
+            if (isFull) {
+                fullLines.add(y);
+            }
+        }
+
+        if (!fullLines.isEmpty()) {
+            System.out.println("Usunięte pełne linie: " + fullLines.size());
+
+            for (Integer fullLine : fullLines) {
+                removeLine(fullLine);
+            }
+
+            shiftLinesDown(fullLines.size());
+        }
+    }
+
+    private static void removeLine(int line) {
+        for (int x = 0; x < BOARD_WIDTH; x++) {
+            board[x][line] = 0;
+        }
+
+        List<Node> nodesToRemove = new ArrayList<>();
+        for (Node node : root.getChildren()) {
+            if (node instanceof Pane) {
+                Pane square = (Pane) node;
+                int squareY = (int) (square.getLayoutY() / Tetromino.SIZE);
+                if (squareY == line) {
+                    nodesToRemove.add(square);
+                }
+            }
+        }
+
+        root.getChildren().removeAll(nodesToRemove);
+    }
+
+    private static void shiftLinesDown(int linesCount) {
+        for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
+            for (int x = 0; x < BOARD_WIDTH; x++) {
+                if (y - linesCount >= 0) {
+                    board[x][y] = board[x][y - linesCount];
+                } else {
+                    board[x][y] = 0;
+                }
+            }
+        }
+
+        for (Node node : root.getChildren()) {
+            if (node instanceof Pane) {
+                Pane square = (Pane) node;
+                double squareY = square.getLayoutY();
+                square.relocate(square.getLayoutX(), squareY + linesCount * Tetromino.SIZE);
             }
         }
     }
