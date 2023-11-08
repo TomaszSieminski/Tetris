@@ -19,6 +19,7 @@ public class Board {
     private static final int[][] board = new int[BOARD_WIDTH][BOARD_HEIGHT];
     static Pane root = new Pane();
 
+    // Enum to define the types of tetromino shapes
     enum ShapeType {
         L, Square, J, T, I, S, Z
     }
@@ -37,7 +38,7 @@ public class Board {
         //ShapeType randomType = ShapeType.I;
 
         Tetromino shape = null;
-
+        // Initialize the tetromino based on its type
         switch (randomType) {
             case L -> shape = new TetrominoL();
             case Square -> shape = new TetrominoSquare();
@@ -90,10 +91,10 @@ public class Board {
         refreshTetrominoView();
     }
     private static void refreshTetrominoView() {
-        root.getChildren().remove(currentTetrominoPane); // Remove current tetromino
+        root.getChildren().remove(currentTetrominoPane); // Remove the current tetromino
         currentTetrominoPane = currentTetromino.createTetromino(); // Create a new tetromino
-        currentTetrominoPane.relocate(currentTetrominoX,currentTetrominoY);
-        root.getChildren().add(currentTetrominoPane); // Add to the scene
+        currentTetrominoPane.relocate(currentTetrominoX, currentTetrominoY);
+        root.getChildren().add(currentTetrominoPane); // Add it to the scene
     }
     static void moveTetrominoDown() {
         if (currentTetromino != null && canMoveTetrominoDown()) {
@@ -140,17 +141,17 @@ public class Board {
                     int boardY = currentTetrominoY / Tetromino.SIZE + y;
                     board[boardX][boardY] = 1;
 
-                    // Stwórz nowy Pane reprezentujący pojedynczy blok
+                    // Create a new Pane representing a single block
                     Pane blockPane = new Pane();
                     blockPane.relocate(boardX * Tetromino.SIZE, boardY * Tetromino.SIZE);
-                    Block block = new Block();
+                    Block block = new Block(Block.image);
                     blockPane.getChildren().add(block);
                     root.getChildren().add(blockPane);
                 }
             }
         }
 
-        // Usuń tetromino z interfejsu graficznego
+        // Remove the current tetromino from the graphical interface
         root.getChildren().remove(currentTetrominoPane);
     }
     public static void removeFullLines() {
@@ -169,16 +170,14 @@ public class Board {
         }
 
         if (!fullLines.isEmpty()) {
-            System.out.println("Usunięte pełne linie: " + fullLines.size());
-
             for (Integer fullLine : fullLines) {
                 removeLine(fullLine);
             }
-
-            // Przesuń linie powyżej usuniętych w dół
+            // Shift lines above the removed ones down
             shiftLinesAbove(fullLines);
         }
     }
+    // Remove a specific line from the board
     private static void removeLine(int line) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
             board[x][line] = 0;
@@ -199,6 +198,7 @@ public class Board {
             root.getChildren().removeAll(nodesToRemove);
         });
     }
+    // Shift lines above the removed lines down
     private static void shiftLinesAbove(List<Integer> fullLines) {
         if (!fullLines.isEmpty()) {
             int lowestFullLine = fullLines.get(fullLines.size() - 1);
