@@ -26,7 +26,7 @@ public class TetrisGame extends Application {
             }
         });
         Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(0.5), event -> {
+                new KeyFrame(Duration.seconds(100000000), event -> {
                     Board.moveTetrominoDown();
                 })
         );

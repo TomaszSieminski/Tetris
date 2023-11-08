@@ -1,5 +1,6 @@
 package com.example.tetris;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
@@ -24,7 +25,7 @@ public class Board {
     public static void spawnTetromino() {
         Tetromino randomTetromino = createRandomTetromino(); // Create a new random tetromino
         currentTetromino = randomTetromino; // Assign them as current tetromino
-        currentTetrominoX = 0; // Set starting position X
+        currentTetrominoX = 200; // Set starting position X
         currentTetrominoY = 0; // Set starting position Y
         currentTetrominoPane = randomTetromino.createTetromino(); // Create a Pane for the new tetromino
         currentTetrominoPane.relocate(currentTetrominoX,currentTetrominoY); // Place on the board
@@ -33,7 +34,7 @@ public class Board {
     public static Tetromino createRandomTetromino() {
         Random random = new Random();
         ShapeType randomType = ShapeType.values()[random.nextInt(7)];
-        //ShapeType randomType = ShapeType.Square;
+        //ShapeType randomType = ShapeType.I;
 
         Tetromino shape = null;
 
@@ -138,9 +139,19 @@ public class Board {
                     int boardX = currentTetrominoX / Tetromino.SIZE + x;
                     int boardY = currentTetrominoY / Tetromino.SIZE + y;
                     board[boardX][boardY] = 1;
+
+                    // Stwórz nowy Pane reprezentujący pojedynczy blok
+                    Pane blockPane = new Pane();
+                    blockPane.relocate(boardX * Tetromino.SIZE, boardY * Tetromino.SIZE);
+                    Block block = new Block();
+                    blockPane.getChildren().add(block);
+                    root.getChildren().add(blockPane);
                 }
             }
         }
+
+        // Usuń tetromino z interfejsu graficznego
+        root.getChildren().remove(currentTetrominoPane);
     }
     public static void removeFullLines() {
         List<Integer> fullLines = new ArrayList<>();
@@ -164,10 +175,10 @@ public class Board {
                 removeLine(fullLine);
             }
 
-            shiftLinesDown(fullLines.size());
+            // Przesuń linie powyżej usuniętych w dół
+            shiftLinesAbove(fullLines);
         }
     }
-
     private static void removeLine(int line) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
             board[x][line] = 0;
@@ -184,25 +195,32 @@ public class Board {
             }
         }
 
-        root.getChildren().removeAll(nodesToRemove);
+        Platform.runLater(() -> {
+            root.getChildren().removeAll(nodesToRemove);
+        });
     }
+    private static void shiftLinesAbove(List<Integer> fullLines) {
+        if (!fullLines.isEmpty()) {
+            int lowestFullLine = fullLines.get(fullLines.size() - 1);
 
-    private static void shiftLinesDown(int linesCount) {
-        for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
-            for (int x = 0; x < BOARD_WIDTH; x++) {
-                if (y - linesCount >= 0) {
-                    board[x][y] = board[x][y - linesCount];
-                } else {
-                    board[x][y] = 0;
+            for (int y = lowestFullLine - 1; y >= 0; y--) {
+                for (int x = 0; x < BOARD_WIDTH; x++) {
+                    int newValue = (y - fullLines.size() >= 0) ? board[x][y - fullLines.size()] : 0;
+                    board[x][y] = newValue;
                 }
             }
-        }
 
-        for (Node node : root.getChildren()) {
-            if (node instanceof Pane) {
-                Pane square = (Pane) node;
-                double squareY = square.getLayoutY();
-                square.relocate(square.getLayoutX(), squareY + linesCount * Tetromino.SIZE);
+            for (Node node : root.getChildren()) {
+                if (node instanceof Pane) {
+                    Pane square = (Pane) node;
+                    double squareY = square.getLayoutY();
+                    int squareYIndex = (int) (squareY / Tetromino.SIZE);
+
+                    if (squareYIndex < lowestFullLine) {
+                        double newY = squareY + fullLines.size() * Tetromino.SIZE;
+                        square.relocate(square.getLayoutX(), newY);
+                    }
+                }
             }
         }
     }
