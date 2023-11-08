@@ -1,8 +1,11 @@
 package com.example.tetris;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +21,14 @@ public class Board {
     private static int currentTetrominoY;
     private static final int[][] board = new int[BOARD_WIDTH][BOARD_HEIGHT];
     static Pane root = new Pane();
+    private static final Score score = new Score();
 
     // Enum to define the types of tetromino shapes
     enum ShapeType {
         L, Square, J, T, I, S, Z
     }
     public static void spawnTetromino() {
+
         Tetromino randomTetromino = createRandomTetromino(); // Create a new random tetromino
         currentTetromino = randomTetromino; // Assign them as current tetromino
         currentTetrominoX = 200; // Set starting position X
@@ -170,9 +175,16 @@ public class Board {
         }
 
         if (!fullLines.isEmpty()) {
+            score.increaseScore(fullLines.size() * 100);
             for (Integer fullLine : fullLines) {
                 removeLine(fullLine);
             }
+
+            Label scoreLabel = score.getScoreLabel();
+            StackPane.setAlignment(scoreLabel, Pos.TOP_RIGHT);
+            StackPane stackPane = new StackPane(scoreLabel);
+            root.getChildren().add(stackPane);
+
             // Shift lines above the removed ones down
             shiftLinesAbove(fullLines);
         }
@@ -185,8 +197,7 @@ public class Board {
 
         List<Node> nodesToRemove = new ArrayList<>();
         for (Node node : root.getChildren()) {
-            if (node instanceof Pane) {
-                Pane square = (Pane) node;
+            if (node instanceof Pane square) {
                 int squareY = (int) (square.getLayoutY() / Tetromino.SIZE);
                 if (squareY == line) {
                     nodesToRemove.add(square);

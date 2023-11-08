@@ -15,6 +15,7 @@ public class TetrisGame extends Application {
         primaryStage.setTitle("Tetris");
         Scene scene = new Scene(Board.root, Board.BOARD_WIDTH * Tetromino.SIZE, Board.BOARD_HEIGHT * Tetromino.SIZE);
         scene.setFill(Color.DARKGRAY); // Set the background color
+
         Board.spawnTetromino();
 
         scene.setOnKeyPressed(event -> {
